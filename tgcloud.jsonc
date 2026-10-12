@@ -1,0 +1,14 @@
+{
+  // Telegram Serverless project configuration.
+  // https://core.telegram.org/bots/serverless
+  "$schema": "./node_modules/@tgcloud/cli/schema/tgcloud.json",
+
+  // The Mini App front-end (static HTML dashboard) that is served next to the bot.
+  "static": {
+    "source": "webapp",
+    "spa": true,
+    "headers": [
+      { "path": "/*", "set": { "Referrer-Policy": "no-referrer" } }
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# tgcloud local state (CLI cache / synced remote copy)
+.tgcloud/
+
+# Exported archives
+*.zip
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

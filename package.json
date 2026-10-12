@@ -1,0 +1,19 @@
+{
+  "name": "serverless-telegram-bot",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A complete Telegram Serverless bot: profiles, economy, games, referrals, leaderboard, achievements and a developer panel.",
+  "scripts": {
+    "deploy": "tgcloud push",
+    "status": "tgcloud status",
+    "diff": "tgcloud diff",
+    "migrate": "tgcloud migrate",
+    "run": "tgcloud run",
+    "login": "tgcloud login",
+    "webhook": "tgcloud webhook"
+  },
+  "devDependencies": {
+    "@tgcloud/cli": "^0.2.0"
+  }
+}

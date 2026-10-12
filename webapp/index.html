@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>🎮 Serverless Bot — Mini App</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    :root { --bg:#0f1420; --card:#1b2333; --accent:#3b82f6; --text:#e8edf7; --muted:#93a1bd; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+           background: var(--bg); color: var(--text); padding: 16px; }
+    .top { display:flex; justify-content: space-between; align-items: center; margin: 4px 0 16px; }
+    h1 { font-size: 20px; margin: 0; }
+    .lang { width:auto; padding:8px 14px; margin:0; background:#334155; font-size:14px; }
+    .card { background: var(--card); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .stat { background:#121a29; border-radius: 12px; padding: 12px; text-align:center; }
+    .stat .v { font-size: 20px; font-weight: 700; }
+    .stat .l { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    button { width:100%; border:0; border-radius: 12px; padding: 14px; font-size: 16px;
+             font-weight: 600; color:#fff; background: var(--accent); margin-top: 8px; }
+    button:active { opacity: .85; }
+    input { width:100%; border:0; border-radius:12px; padding:14px; font-size:16px;
+            background:#121a29; color:#e8edf7; margin-top:4px; }
+    .row { display:flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #263048; }
+    .row:last-child { border-bottom: 0; }
+    .muted { color: var(--muted); font-size: 13px; }
+    .about { font-size: 14px; line-height: 1.95; color: var(--text); margin-top: 10px; }
+    .about p { margin: 0 0 12px; }
+    .about p:last-child { margin-bottom: 0; }
+    .about .lead { font-weight: 700; font-size: 15px; }
+    .about .note { color: var(--muted); font-size: 13px; background:#121a29;
+                   border-radius:10px; padding:10px 12px; }
+    .about a { color:#7aa2ff; text-decoration:none; word-break: break-all; }
+    .about a:active { text-decoration: underline; }
+    .spin { font-size: 40px; text-align:center; margin: 8px 0; }
+    .topbtns { display:flex; gap:8px; flex:0 0 auto; }
+
+    /* developer storage console */
+    .tblbar { display:flex; flex-wrap:wrap; gap:8px; }
+    .tbl { width:auto; flex:1 1 44%; min-width:44%; margin:0; padding:12px 12px;
+           display:flex; justify-content:space-between; align-items:center; gap:8px;
+           background:#121a29; color:var(--text); border:1px solid #22304a; border-radius:12px; font-size:14px; }
+    .tbl .cnt { font-size:12px; color:var(--muted); background:#1b2333; border-radius:8px; padding:1px 8px; }
+    .tbl.on { background:var(--accent); border-color:var(--accent); }
+    .tbl.on .cnt { background:rgba(255,255,255,.22); color:#fff; }
+    .search { margin:0; background:#121a29; border:1px solid #22304a; }
+    .btnrow { display:flex; gap:8px; margin-top:10px; }
+    .btnrow button { margin-top:0; }
+    .mini { background:#334155; }
+    .danger { background:#b91c1c; }
+
+    details.rec { background:#121a29; border:1px solid #22304a; border-radius:14px; margin-top:10px; overflow:hidden; }
+    details.rec > summary { list-style:none; cursor:pointer; padding:14px; display:flex; flex-direction:column; gap:3px; }
+    details.rec > summary::-webkit-details-marker { display:none; }
+    details.rec[open] > summary { background:#16203a; border-bottom:1px solid #22304a; }
+    .recid { font-weight:700; font-size:15px; }
+    .recsum { font-size:12px; color:var(--muted); line-height:1.5; word-break:break-word; }
+    .recsum b { color:#c7d2ea; font-weight:600; }
+    .recb { padding:14px; }
+    .fields { display:flex; flex-direction:column; gap:12px; }
+    .field label { display:block; font-size:12px; color:var(--muted); margin-bottom:6px; }
+    .field label em { font-style:normal; opacity:.8; font-size:10px; background:#1b2333; border-radius:6px; padding:1px 6px; margin-inline-start:4px; }
+    .field input[type=text], .field textarea { background:#0d1522; }
+    .field textarea { width:100%; border:1px solid #22304a; border-radius:12px; padding:12px; color:var(--text);
+                      font-family: ui-monospace, Menlo, Consolas, monospace; font-size:14px; resize:vertical; }
+    .field input[type=checkbox] { width:24px; height:24px; margin:0; accent-color:var(--accent); }
+    .recb .btnrow button { flex:1; padding:13px; font-size:15px; }
+  </style>
+</head>
+<body>
+  <div id="appMain">
+    <div class="top">
+      <h1>🎮 Serverless Bot</h1>
+      <div class="topbtns">
+        <button class="lang" id="devOpenBtn" style="display:none">🛠️</button>
+        <button class="lang" id="langBtn">EN</button>
+      </div>
+    </div>
+
+  <div class="card" id="statsCard">
+    <div class="muted" data-i18n="statsTitle"></div>
+    <div class="grid" id="botStats"></div>
+  </div>
+
+  <div class="card" id="profileCard">
+    <div class="muted">👤 <span data-i18n="profile"></span></div>
+    <div class="grid" id="profile"></div>
+  </div>
+
+  <div class="card">
+    <div class="muted">➗ <span data-i18n="mathTitle"></span></div>
+    <div id="mathBody">
+      <div class="spin" id="question">…</div>
+      <input id="answer" type="text" inputmode="numeric" autocomplete="off" data-i18n-ph="answer" />
+      <button id="checkBtn" data-i18n="check"></button>
+      <button id="newBtn" style="background:#334155" data-i18n="newQuestion"></button>
+      <div class="muted" id="challengeResult" style="margin-top:8px;text-align:center"></div>
+    </div>
+    <div class="muted" id="mathMaint" style="display:none;text-align:center;margin-top:8px"></div>
+  </div>
+
+  <div class="card">
+    <div class="muted">🏆 <span data-i18n="topPlayers"></span></div>
+    <div id="leaderboard"></div>
+  </div>
+
+  <div class="card">
+    <div class="muted">ℹ️ <span data-i18n="about"></span></div>
+    <div class="about" id="aboutNote"></div>
+  </div>
+
+  </div>
+
+  <div id="devMain" style="display:none">
+    <div class="top">
+      <h1>🗄️ <span data-i18n="storage"></span></h1>
+      <button class="lang" id="devBackBtn" data-i18n="backApp"></button>
+    </div>
+    <div class="muted" data-i18n="storageHint" style="margin:-4px 0 12px"></div>
+    <div class="card"><div class="tblbar" id="devTables"></div></div>
+    <div class="card">
+      <input class="search" id="devSearch" data-i18n-ph="search" autocomplete="off" />
+      <div class="muted" id="devMeta" style="margin:10px 0"></div>
+      <div class="btnrow">
+        <button class="mini" id="devRefreshBtn" data-i18n="refresh"></button>
+        <button class="danger" id="devClearBtn" data-i18n="clear"></button>
+      </div>
+      <div id="devPanel"></div>
+    </div>
+  </div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+
+    const STR = {
+      ar: {
+        statsTitle: 'إحصائيات البوت', users: 'المستخدمون', games: 'الألعاب',
+        coins: 'العملات', status: 'الحالة',
+        profile: 'الملف الشخصي', level: 'المستوى', wins: 'الانتصارات', gems: 'الجواهر',
+        mathTitle: 'تحدي الرياضيات', answer: 'إجابتك', check: 'تحقق', newQuestion: 'سؤال جديد',
+        correct: (r, c) => `✅ صحيح! +${r} 🪙 — الرصيد: ${c} 🪙`,
+        wrong: (l, c) => `❌ خطأ — خصم ${l} 🪙 — الرصيد: ${c} 🪙`,
+        maintenance: '🛠️ البوت في وضع الصيانة حاليًا. عد لاحقًا.',
+        topPlayers: 'أفضل اللاعبين',
+        about: 'عن البوت',
+        aboutNote: '<p class="lead">⚡️ هذا التطبيق والبوت يعملان على Telegram Serverless</p>' +
+          '<p>خدمة تجريبية (Early Access) مقدّمة من تيليجرام، تقوم بتشغيل البوتات وقواعد بياناتها مباشرةً على البنية التحتية لتيليجرام دون الحاجة إلى سيرفرات خاصة.</p>' +
+          '<p class="note">🧪 ونظرًا لأنها تجريبية، قد تلاحظ أحيانًا بعض البطء أو أخطاءً بسيطة.</p>' +
+          '<p>📖 التوثيق: <a href="https://core.telegram.org/bots/serverless" target="_blank">core.telegram.org/bots/serverless</a></p>',
+        storage: 'التخزين (للمطور)', storageHint: 'وصول كامل: عرض وتعديل وحذف البيانات.',
+        backApp: '⬅️ التطبيق', search: 'بحث…',
+        total: 'المجموع', refresh: 'تحديث', clear: 'تفريغ الجدول',
+        save: 'حفظ', del: 'حذف', saved: '✅ تم الحفظ', deleted: '🗑️ تم الحذف', cleared: '🗑️ تم تفريغ الجدول',
+        confirmClear: 'تفريغ الجدول بالكامل؟ لا يمكن التراجع.', confirmDel: 'حذف هذا الصف؟',
+      },
+      en: {
+        statsTitle: 'Bot statistics', users: 'Users', games: 'Games',
+        coins: 'Coins', status: 'Status',
+        profile: 'Profile', level: 'Level', wins: 'Wins', gems: 'Gems',
+        mathTitle: 'Math challenge', answer: 'Your answer', check: 'Check', newQuestion: 'New question',
+        correct: (r, c) => `✅ Correct! +${r} 🪙 — balance: ${c} 🪙`,
+        wrong: (l, c) => `❌ Wrong — −${l} 🪙 — balance: ${c} 🪙`,
+        maintenance: '🛠️ The bot is under maintenance. Come back later.',
+        topPlayers: 'Top players',
+        about: 'About',
+        aboutNote: '<p class="lead">⚡️ This app and bot run on Telegram Serverless</p>' +
+          '<p>an Early Access service from Telegram that runs bots and their databases directly on Telegram’s infrastructure, with no private servers.</p>' +
+          '<p class="note">🧪 As it is experimental, you may sometimes notice slight slowness or minor errors.</p>' +
+          '<p>📖 Docs: <a href="https://core.telegram.org/bots/serverless" target="_blank">core.telegram.org/bots/serverless</a></p>',
+        storage: 'Storage (developer)', storageHint: 'Full access: view, edit and delete data.',
+        backApp: '⬅️ App', search: 'Search…',
+        total: 'Total', refresh: 'Refresh', clear: 'Clear table',
+        save: 'Save', del: 'Delete', saved: '✅ Saved', deleted: '🗑️ Deleted', cleared: '🗑️ Table cleared',
+        confirmClear: 'Clear the whole table? This cannot be undone.', confirmDel: 'Delete this row?',
+      },
+    };
+
+    let lang = (tg.initDataUnsafe && tg.initDataUnsafe.user &&
+                /^ar/i.test(tg.initDataUnsafe.user.language_code || '')) ? 'ar' : 'en';
+    let lastStats = null, lastProfile = null, lastRows = null, current = null;
+    let isDev = false, maintenance = false;
+
+    const T = (k) => STR[lang][k];
+
+    function show(el, html) { document.getElementById(el).innerHTML = html; }
+    function stat(label, value) {
+      return `<div class="stat"><div class="v">${value}</div><div class="l">${label}</div></div>`;
+    }
+    function err(msg) {
+      console.error(msg);
+      tg.showAlert ? tg.showAlert(msg) : alert(msg);
+    }
+
+    function call(name, input, cb) {
+      if (!tg.Serverless || !tg.Serverless.call) return err('Serverless SDK not available');
+      tg.Serverless.call(name, input || {}, function (e, res) {
+        if (e) return err(e.message || 'Request failed');
+        cb(res);
+      });
+    }
+
+    function applyLang(next) {
+      lang = next === 'en' ? 'en' : 'ar';
+      const root = document.documentElement;
+      root.lang = lang;
+      root.dir = lang === 'ar' ? 'rtl' : 'ltr';
+      document.querySelectorAll('[data-i18n]').forEach((el) => {
+        el.textContent = T(el.getAttribute('data-i18n'));
+      });
+      document.querySelectorAll('[data-i18n-ph]').forEach((el) => {
+        el.placeholder = T(el.getAttribute('data-i18n-ph'));
+      });
+      const aboutNote = document.getElementById('aboutNote');
+      if (aboutNote) aboutNote.innerHTML = T('aboutNote');
+      document.getElementById('langBtn').textContent = lang === 'ar' ? 'EN' : 'ع';
+      renderStats(lastStats);
+      renderProfile(lastProfile);
+      renderBoard(lastRows);
+      renderMaintenance();
+    }
+
+    function renderMaintenance() {
+      const on = maintenance && !isDev;
+      const body = document.getElementById('mathBody');
+      const note = document.getElementById('mathMaint');
+      if (body) body.style.display = on ? 'none' : '';
+      if (note) {
+        note.textContent = on ? T('maintenance') : '';
+        note.style.display = on ? '' : 'none';
+      }
+    }
+
+    function renderStats(s) {
+      if (!s) return;
+      show('botStats', stat(T('users'), s.users) + stat(T('games'), s.games) +
+                      stat(T('coins'), s.coins) + stat(T('status'), '🟢'));
+    }
+    function renderProfile(p) {
+      if (!p) return;
+      show('profile', stat(T('level'), p.level) + stat(T('coins'), p.coins) +
+                      stat(T('wins'), p.wins) + stat(T('gems'), p.gems));
+    }
+    function renderBoard(rows) {
+      if (!rows) return;
+      if (!rows.length) return show('leaderboard', '<div class="muted">—</div>');
+      show('leaderboard', rows.map(r =>
+        `<div class="row"><span>#${r.rank} ${r.name}</span><span>${r.coins} 🪙</span></div>`).join(''));
+    }
+
+    function newQuestion() {
+      const a = 2 + Math.floor(Math.random() * 29);
+      const b = 2 + Math.floor(Math.random() * 19);
+      const op = ['+', '-', '×'][Math.floor(Math.random() * 3)];
+      current = { a, op, b };
+      document.getElementById('question').textContent = `${a} ${op} ${b} = ?`;
+      document.getElementById('answer').value = '';
+      document.getElementById('challengeResult').textContent = '';
+    }
+
+    document.getElementById('langBtn').addEventListener('click', () => {
+      const next = lang === 'ar' ? 'en' : 'ar';
+      applyLang(next);
+      call('setLang', { lang: next }, () => {});
+    });
+    document.getElementById('newBtn').addEventListener('click', newQuestion);
+
+    document.getElementById('checkBtn').addEventListener('click', () => {
+      if (maintenance && !isDev) { maintenance = true; return renderMaintenance(); }
+      if (!current) return newQuestion();
+      const raw = document.getElementById('answer').value.trim();
+      if (raw === '') return;
+      const btn = document.getElementById('checkBtn');
+      btn.disabled = true;
+      call('mathChallenge', { a: current.a, op: current.op, b: current.b, answer: Number(raw) }, (r) => {
+        if (r && r.maintenance) {
+          maintenance = true;
+          renderMaintenance();
+          btn.disabled = false;
+          return;
+        }
+        document.getElementById('challengeResult').textContent = r.correct
+          ? T('correct')(r.reward, r.coins) : T('wrong')(r.loss, r.coins);
+        document.getElementById('question').textContent = r.correct ? '🎉' : '➗';
+        btn.disabled = false;
+        current = null;
+        call('getProfile', {}, (p) => { lastProfile = p; maintenance = !!p.maintenance; renderProfile(p); renderMaintenance(); });
+        call('getStats', {}, (s) => { lastStats = s; renderStats(s); });
+        call('getLeaderboard', {}, (rows) => { lastRows = rows; renderBoard(rows); });
+      });
+    });
+
+    // ---- developer storage console (separate screen) -----------------------
+    const devState = { name: null, tables: [], cols: [], rows: [], total: 0, query: '' };
+
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+    function fmt(v) {
+      if (v === null || v === undefined) return '—';
+      if (typeof v === 'object') return JSON.stringify(v);
+      return String(v);
+    }
+    function showDev() { document.getElementById('appMain').style.display = 'none';
+                         document.getElementById('devMain').style.display = ''; }
+    function showApp() { document.getElementById('devMain').style.display = 'none';
+                         document.getElementById('appMain').style.display = ''; }
+
+    function fieldHtml(col, v) {
+      let input;
+      if (col.type === 'bool') {
+        input = `<input type="checkbox" data-col="${esc(col.name)}" data-type="bool"${v ? ' checked' : ''}>`;
+      } else if (col.type === 'json') {
+        input = `<textarea rows="2" data-col="${esc(col.name)}" data-type="json">${esc(v == null ? '' : JSON.stringify(v))}</textarea>`;
+      } else {
+        const mode = col.type === 'int' ? ' inputmode="numeric"' : '';
+        input = `<input type="text"${mode} data-col="${esc(col.name)}" data-type="${col.type}" value="${esc(v == null ? '' : String(v))}">`;
+      }
+      return `<div class="field"><label>${esc(col.name)} <em>${col.type}</em></label>${input}</div>`;
+    }
+
+    function rowHtml(r, pk, cols) {
+      const id = r[pk];
+      const summary = cols.slice(0, 3).map((c) => `<b>${esc(c.name)}</b> ${esc(fmt(r[c.name]))}`).join(' · ');
+      const fields = cols.map((c) => fieldHtml(c, r[c.name])).join('');
+      return `<details class="rec" data-pk="${esc(String(id))}">` +
+        `<summary><span class="recid">#${esc(String(id))}</span><span class="recsum">${summary}</span></summary>` +
+        `<div class="recb"><div class="fields">${fields}</div>` +
+        `<div class="btnrow"><button data-act="save">${T('save')}</button>` +
+        `<button class="danger" data-act="del">${T('del')}</button></div></div></details>`;
+    }
+
+    function renderDevRows() {
+      const cols = devState.cols.filter((c) => c.name !== devState.pk);
+      const q = devState.query.trim().toLowerCase();
+      const rows = q
+        ? devState.rows.filter((r) => devState.cols.some((c) => fmt(r[c.name]).toLowerCase().includes(q)))
+        : devState.rows;
+      const meta = `${T('total')}: ${devState.total} · ${esc(devState.name)}` +
+        (q ? ` · ${rows.length}/${devState.rows.length}` : '');
+      document.getElementById('devMeta').innerHTML = meta;
+      const list = rows.length
+        ? rows.map((r) => rowHtml(r, devState.pk, cols)).join('')
+        : `<div class="muted" style="text-align:center;padding:16px">—</div>`;
+      show('devPanel', list);
+      document.querySelectorAll('#devTables .tbl').forEach((el) => {
+        el.classList.toggle('on', el.getAttribute('data-tbl') === devState.name);
+      });
+    }
+
+    function openTable(name) {
+      call('adminRows', { table: name, limit: 200, offset: 0 }, (data) => {
+        devState.name = data.name;
+        devState.pk = data.pk;
+        devState.cols = data.columns || [];
+        devState.rows = data.rows || [];
+        devState.total = data.total;
+        devState.query = '';
+        document.getElementById('devSearch').value = '';
+        renderDevRows();
+      });
+    }
+    function loadDev(openName) {
+      call('adminOverview', {}, (res) => {
+        devState.tables = (res && res.tables) || [];
+        show('devTables', devState.tables.map((tb) =>
+          `<button class="tbl" data-tbl="${esc(tb.name)}"><span>${esc(tb.name)}</span>` +
+          `<span class="cnt">${tb.count}</span></button>`).join(''));
+        const target = openName || devState.name || (devState.tables[0] && devState.tables[0].name);
+        if (target) openTable(target);
+      });
+    }
+    function devSave(pkValue, rowEl) {
+      const values = {};
+      rowEl.querySelectorAll('[data-col]').forEach((el) => {
+        const t = el.getAttribute('data-type');
+        values[el.getAttribute('data-col')] = t === 'bool' ? el.checked : el.value;
+      });
+      call('adminUpdate', { table: devState.name, pkValue: pkValue, values: values }, () => {
+        tg.showAlert ? tg.showAlert(T('saved')) : null;
+        openTable(devState.name);
+      });
+    }
+    function devDelete(pkValue) {
+      if (!confirm(T('confirmDel'))) return;
+      call('adminDelete', { table: devState.name, pkValue: pkValue }, () => {
+        tg.showAlert ? tg.showAlert(T('deleted')) : null;
+        loadDev(devState.name);
+      });
+    }
+    function devClear() {
+      if (!confirm(T('confirmClear'))) return;
+      call('adminClear', { table: devState.name }, () => {
+        tg.showAlert ? tg.showAlert(T('cleared')) : null;
+        loadDev(devState.name);
+      });
+    }
+
+    document.getElementById('devTables').addEventListener('click', (e) => {
+      const b = e.target.closest('button[data-tbl]');
+      if (b) openTable(b.getAttribute('data-tbl'));
+    });
+    document.getElementById('devPanel').addEventListener('click', (e) => {
+      const b = e.target.closest('button[data-act]');
+      if (!b) return;
+      const rowEl = b.closest('details.rec');
+      const pkValue = rowEl.getAttribute('data-pk');
+      if (b.getAttribute('data-act') === 'save') return devSave(pkValue, rowEl);
+      if (b.getAttribute('data-act') === 'del') return devDelete(pkValue);
+    });
+    document.getElementById('devSearch').addEventListener('input', (e) => {
+      devState.query = e.target.value;
+      renderDevRows();
+    });
+    document.getElementById('devRefreshBtn').addEventListener('click', () => { if (devState.name) openTable(devState.name); });
+    document.getElementById('devClearBtn').addEventListener('click', devClear);
+    document.getElementById('devOpenBtn').addEventListener('click', showDev);
+    document.getElementById('devBackBtn').addEventListener('click', showApp);
+
+    call('adminCheck', {}, (res) => {
+      if (res && res.dev) {
+        isDev = true;
+        renderMaintenance();
+        document.getElementById('devOpenBtn').style.display = '';
+        loadDev();
+        if (/[?&]admin=1/.test(location.search)) showDev();
+      }
+    });
+
+    applyLang(lang);
+    call('getStats', {}, (s) => { lastStats = s; renderStats(s); });
+    call('getLeaderboard', {}, (rows) => { lastRows = rows; renderBoard(rows); });
+    call('getProfile', {}, (p) => {
+      lastProfile = p;
+      maintenance = !!p.maintenance;
+      applyLang(p.lang || lang);
+      renderProfile(p);
+    });
+    newQuestion();
+  </script>
+</body>
+</html>
