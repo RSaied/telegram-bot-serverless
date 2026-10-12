@@ -3,7 +3,6 @@ import { t } from '../lib/i18n.js';
 import { DEVELOPER_ID, DEFAULT_LANG, CURRENCY } from '../lib/config.js';
 import * as db from '../lib/db.js';
 import { isMaintenance, getSetting, setSetting, isGameEnabled } from '../lib/settings.js';
-import { userDisplay } from '../lib/format.js';
 import {
   mainScreen, profileScreen, topScreen, gamesScreen, shopScreen,
   refScreen, achScreen, statsScreen, settingsScreen, helpScreen, aboutScreen, SHOP_ITEMS,
@@ -76,7 +75,7 @@ export default async function (query) {
         action,
         token,
         value,
-        user: { id: from.id, name: userDisplay(user), lang },
+        user: { id: from.id, name: user.name || user.username || from.id, lang },
         callbackQueryId: query.id,
         inlineMessageId: query.inline_message_id || null,
       });

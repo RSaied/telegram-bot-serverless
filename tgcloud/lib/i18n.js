@@ -34,7 +34,7 @@ const STRINGS = {
     btn_ach: '🏅 الإنجازات',
     btn_help: '❓ المساعدة',
     btn_about: 'ℹ️ عن البوت',
-    btn_settings: '⚙️ الإعدادات',
+    btn_settings: '🌐 اللغة',
     btn_app: '🎡 التطبيق المصغّر',
     btn_dev: '🛡️ لوحة المطور',
 
@@ -161,7 +161,7 @@ const STRINGS = {
     ach_title: '🏅 *الإنجازات*',
     ach_locked: '🔒',
     ach_unlocked: 'مفتوح: {name}',
-    settings_title: '⚙️ *الإعدادات*',
+    settings_title: '🌐 *اللغة*',
     lang_changed: '✅ تم تغيير اللغة.',
     help_title: '❓ *المساعدة*',
     help_body:
@@ -263,7 +263,7 @@ const STRINGS = {
     btn_ach: '🏅 Achievements',
     btn_help: '❓ Help',
     btn_about: 'ℹ️ About',
-    btn_settings: '⚙️ Settings',
+    btn_settings: '🌐 Language',
     btn_app: '🎡 Mini App',
     btn_dev: '🛡️ Developer',
 
@@ -380,7 +380,7 @@ const STRINGS = {
     ach_title: '🏅 *Achievements*',
     ach_locked: '🔒',
     ach_unlocked: 'Unlocked: {name}',
-    settings_title: '⚙️ *Settings*',
+    settings_title: '🌐 *Language*',
     lang_changed: '✅ Language changed.',
     help_title: '❓ *Help*',
     help_body:

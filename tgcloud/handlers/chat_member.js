@@ -3,6 +3,7 @@ import { DEFAULT_LANG } from '../lib/config.js';
 import * as db from '../lib/db.js';
 import { getSetting } from '../lib/settings.js';
 import { sendMessage } from '../lib/ui.js';
+import { escapeMd } from '../lib/format.js';
 
 const IN = ['member', 'administrator', 'creator'];
 const OUT = ['left', 'kicked'];
@@ -26,6 +27,6 @@ export default async function (update) {
 
   await sendMessage(
     chat.id,
-    t(lang, 'group_welcome', { name: info.first_name || 'friend', title: chat.title || '' }),
+    t(lang, 'group_welcome', { name: escapeMd(info.first_name || 'friend'), title: escapeMd(chat.title || '') }),
   );
 }

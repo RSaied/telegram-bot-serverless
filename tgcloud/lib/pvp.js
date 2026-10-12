@@ -1,5 +1,5 @@
 import { t } from './i18n.js';
-import { randomInt } from './format.js';
+import { randomInt, escapeMd } from './format.js';
 import * as db from './db.js';
 import { editInline, answerCallback } from './ui.js';
 import { WIN_REWARD, BIG_WIN_REWARD, LOSS_PENALTY_RATIO } from './config.js';
@@ -71,7 +71,7 @@ export async function handle({ action, token, value, user, callbackQueryId, inli
     const gameId = String(value).split(':')[0] || 'tictactoe';
     const s = {
       game: gameId,
-      p1: { id: user.id, name: user.name },
+      p1: { id: user.id, name: escapeMd(user.name) },
       p2: null,
       phase: 'lobby',
       turn: 'p1',
@@ -82,7 +82,7 @@ export async function handle({ action, token, value, user, callbackQueryId, inli
       lang2: user.lang || 'ar',
     };
     await db.setSession(token, user.id, `pvp:${gameId}`, s);
-    await editInline(inlineMessageId, t(s.lang1, 'pvp_lobby', { name: user.name }), {
+    await editInline(inlineMessageId, t(s.lang1, 'pvp_lobby', { name: escapeMd(user.name) }), {
       reply_markup: { inline_keyboard: [[{ text: t(s.lang1, 'inl_join'), callback_data: `pvp:join:${token}:${gameId}` }]] },
     });
     return answerCallback(callbackQueryId, '🎮');
@@ -100,7 +100,7 @@ export async function handle({ action, token, value, user, callbackQueryId, inli
   if (action === 'join') {
     if (s.phase !== 'lobby' || p2) return answerCallback(callbackQueryId, '⛔');
     if (user.id === p1.id) return answerCallback(callbackQueryId, '⛔');
-    s.p2 = { id: user.id, name: user.name };
+    s.p2 = { id: user.id, name: escapeMd(user.name) };
     s.lang2 = user.lang || s.lang1;
     s.phase = 'play';
     s.moves = { p1: null, p2: null };

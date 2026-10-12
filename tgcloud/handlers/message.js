@@ -2,6 +2,7 @@ import { api } from 'sdk';
 import { t } from '../lib/i18n.js';
 import { DEVELOPER_ID, DEFAULT_LANG, REFERRAL_BONUS, REFERRED_BONUS, CURRENCY } from '../lib/config.js';
 import * as db from '../lib/db.js';
+import { escapeMd } from '../lib/format.js';
 import { isMaintenance, getSetting, setSetting } from '../lib/settings.js';
 import {
   mainScreen, profileScreen, topScreen, gamesScreen, shopScreen,
@@ -69,34 +70,16 @@ export default async function (message, ctx) {
             await db.addCoins(refId, REFERRAL_BONUS);
             const referrer = await db.getUser(refId);
             extra = t(lang, 'ref_welcome', {
-              name: referrer ? referrer.name || referrer.tgId : refId,
+              name: escapeMd(referrer ? referrer.name || referrer.tgId : refId),
               bonus: REFERRED_BONUS,
               currency: CURRENCY,
             });
           }
         }
         await db.logActivity(user.id, 'start', isNew ? 'new user' : 'returning');
-        if (isNew) {
-          const devUser = await db.getUser(DEVELOPER_ID);
-          const devLang = devUser ? devUser.lang || DEFAULT_LANG : DEFAULT_LANG;
-          try {
-            await sendMessage(
-              DEVELOPER_ID,
-              t(devLang, 'dev_new_user', {
-                name: user.name || from.first_name || user.tgId,
-                id: user.tgId,
-                username: user.username ? `@${user.username}` : '—',
-                coins: user.coins,
-                currency: CURRENCY,
-              }),
-            );
-          } catch (_) {
-            // dev blocked the bot — ignore
-          }
-        }
         await sendMessage(
           chatId,
-          t(lang, 'start_text', { name: from.first_name || 'friend' }) + extra +
+          t(lang, 'start_text', { name: escapeMd(from.first_name || 'friend') }) + extra +
             '\n\n' + t(lang, 'our_links', { channel: 'https://t.me/Botate', site: 'https://ssss.sy' }) +
             '\n\n' + t(lang, 'open_source', { repo: 'https://github.com/RSaied/telegram-bot-serverless' }),
           { reply_markup: (await mainScreen(user, lang, message.chat.type)).keyboard },

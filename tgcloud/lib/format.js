@@ -8,6 +8,14 @@ export function escapeHtml(str) {
     .replace(/>/g, '&gt;');
 }
 
+// Escape user-provided text for Telegram's legacy "Markdown" parse mode.
+// Reserved characters (`_ * ` [ \`) get a backslash so an odd count in a
+// user's name/username can't break parsing and abort the whole message.
+export function escapeMd(str) {
+  if (str === null || str === undefined) return '';
+  return String(str).replace(/[\\_*`\[]/g, (c) => '\\' + c);
+}
+
 export function ltrNum(n) {
   return Number(n).toLocaleString('en-US');
 }
@@ -57,7 +65,14 @@ export function formatDuration(ms) {
 
 export function userDisplay(user) {
   if (!user) return 'Player';
-  return escapeHtml(user.name || user.username || `#${user.tgId}`);
+  return escapeMd(user.name || user.username || `#${user.tgId}`);
+}
+
+// Same as userDisplay but for plain-text contexts (no Markdown parsing),
+// e.g. inline-result titles where backslashes would be shown literally.
+export function userPlain(user) {
+  if (!user) return 'Player';
+  return String(user.name || user.username || `#${user.tgId}`);
 }
 
 // Truncate by Unicode code points (not UTF-16 units) so surrogate pairs

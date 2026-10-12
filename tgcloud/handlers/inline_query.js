@@ -2,7 +2,7 @@ import { api } from 'sdk';
 import { t } from '../lib/i18n.js';
 import { DEFAULT_LANG, CURRENCY } from '../lib/config.js';
 import * as db from '../lib/db.js';
-import { userDisplay, ltrNum } from '../lib/format.js';
+import { userDisplay, userPlain, ltrNum } from '../lib/format.js';
 import { GAMES, gameById } from '../lib/games/index.js';
 import { getSetting, setSetting } from '../lib/settings.js';
 import { tokenId } from '../lib/pvp.js';
@@ -51,7 +51,7 @@ export default async function (inlineQuery) {
     results.push({
       type: 'article',
       id: 'profile',
-      title: '👤 ' + userDisplay(user),
+      title: '👤 ' + userPlain(user),
       description:
         `${ltrNum(user.coins)} ${CURRENCY} • ${t(lang, 'inl_level')} ${user.level} • ` +
         `${t(lang, 'inl_rank')} #${rank} • ${t(lang, 'inl_wins')} ${user.wins}`,

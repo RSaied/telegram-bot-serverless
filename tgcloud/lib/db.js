@@ -1,8 +1,10 @@
 import { db } from 'sdk';
 import { eq, and, desc, sql, inArray } from 'sdk/db';
 import { users, games, sessions, activity } from '../schema.js';
-import { START_COINS, XP_PER_LEVEL, XP_PER_WIN, XP_PER_PLAY } from './config.js';
-import { levelFromXp } from './format.js';
+import { START_COINS, XP_PER_LEVEL, XP_PER_WIN, XP_PER_PLAY, DEVELOPER_ID, DEFAULT_LANG, CURRENCY } from './config.js';
+import { levelFromXp, escapeMd } from './format.js';
+import { t } from './i18n.js';
+import { sendMessage } from './ui.js';
 
 // ---------------------------------------------------------------------------
 // Users
@@ -16,8 +18,30 @@ export async function getUserById(id) {
   return db.select().from(users).where(eq(users.id, id)).get();
 }
 
+/** Notify the developer the first time a user is registered (any entry point). */
+async function notifyNewUser(row, from) {
+  try {
+    if (!row || from?.is_bot || from?.id === DEVELOPER_ID) return;
+    const devUser = await getUser(DEVELOPER_ID);
+    const devLang = devUser ? devUser.lang || DEFAULT_LANG : DEFAULT_LANG;
+    await sendMessage(
+      DEVELOPER_ID,
+      t(devLang, 'dev_new_user', {
+        name: escapeMd(row.name || from?.first_name || row.tgId),
+        id: row.tgId,
+        username: row.username ? `@${escapeMd(row.username)}` : '—',
+        coins: row.coins,
+        currency: CURRENCY,
+      }),
+    );
+  } catch (_) {
+    // dev blocked the bot / rate limited — ignore
+  }
+}
+
 /** Insert the user if missing, otherwise refresh name/username/last_seen. */
 export async function ensureUser(from) {
+  const existing = await getUser(from.id);
   const name = from.first_name || from.username || null;
   const [row] = await db
     .insert(users)
@@ -37,6 +61,7 @@ export async function ensureUser(from) {
     })
     .returning()
     .run();
+  if (!existing) await notifyNewUser(row, from);
   return row;
 }
 
