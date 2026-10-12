@@ -1,73 +1,17 @@
 # 🤖 Telegram Bot Serverless
 
-**بوت تيليجرام متكامل يعمل بالكامل على Telegram Serverless — مفتوح المصدر.**
 **A full-featured Telegram bot running entirely on Telegram Serverless — open source.**
+**بوت تيليجرام متكامل يعمل بالكامل على Telegram Serverless — مفتوح المصدر.**
 
 | | |
 |---|---|
-| 🤖 تجربة البوت / Try the bot | https://t.me/Serverless_BetaBot |
-| 📣 قناة تيليجرام / Telegram channel | https://t.me/Botate |
-| 🌐 الموقع / Website | https://ssss.sy |
-| 📦 الكود المصدري / Source code | https://github.com/RSaied/telegram-bot-serverless |
+| 🤖 Try the bot / تجربة البوت | https://t.me/Serverless_BetaBot |
+| 📣 Telegram channel / قناة تيليجرام | https://t.me/Botate |
+| 🌐 Website / الموقع | https://ssss.sy |
+| 📦 Source code / الكود المصدري | https://github.com/RSaied/telegram-bot-serverless |
 
-> هذا المشروع **مفتوح المصدر** — يمكنك نسخه وتعديله واستخدامه بحرّية.
 > This project is **open source** — fork it, modify it and use it freely.
-
----
-
-## 🇸🇦 العربية
-
-### المزايا
-- 👤 حسابات وملفات شخصية مع مستويات وخبرة.
-- 🪙 اقتصاد داخلي: عملات، جواهر، متجر، ومكافأة يومية بسلسلة.
-- 🎮 **10 ألعاب**: تحدي الأرقام، التخمين، الاختبار، حجر ورقة مقص، مطابقة الفواكه، إكس-أو، الرياضيات، رمي العملة، أعلى/أدنى، ترتيب الكلمات.
-- 🕹️ لعب **1v1** بين المستخدمين داخل الدردشة ولعب ضد البوت.
-- 🏆 لوحة المتصدرين، 🏅 الإنجازات، 👥 نظام الإحالات.
-- 🛡️ لوحة مطوّر (إحصائيات، بث وسائط، حظر، منح، صيانة، سجل…).
-- 🎡 تطبيق مصغّر (Mini App) بواجهة ويب.
-
-### المتطلبات
-- **Node.js 18+**
-- بوت في تيليجرام مع تفعيل **Serverless** من [@BotFather](https://t.me/BotFather).
-- أداة [`@tgcloud/cli`](https://www.npmjs.com/package/@tgcloud/cli).
-
-### طريقة التشغيل
-```bash
-# 1) تثبيت الاعتماديات
-npm install
-
-# 2) ربط المشروع ببوتك (BotFather ← البوت ← Serverless ← CLI Access)
-npx tgcloud login
-
-# 3) رفع الكود + التطبيق المصغّر
-npx tgcloud push
-
-# 4) إنشاء جداول قاعدة البيانات
-npx tgcloud migrate
-```
-ثم افتح البوت في تيليجرام وأرسل `/start`.
-
-### اختبار أمر بدون رفع
-```bash
-npx tgcloud run handlers/message "{ chat: { id: 1, type: 'private' }, from: { id: 112621302, first_name: 'Dev' }, text: '/start' }"
-```
-
-### الإعدادات
-كل معرّفات المشروع (معرّف المطوّر، معرّف التطبيق، روابط البوت والمستودع) موجودة في ملف واحد:
-`tgcloud/lib/ids.js`.
-
-### البنية
-```
-tgcloud/
-  schema.js            # جداول قاعدة البيانات
-  handlers/            # message, callback_query, inline_query, chat_member
-  endpoints/           # واجهة التطبيق المصغّر
-  lib/                 # config, ids, i18n, ui, keyboards, games/, admin, ...
-webapp/                # التطبيق المصغّر (HTML ثابت)
-```
-
-### الرخصة
-MIT — انظر [LICENSE](LICENSE).
+> هذا المشروع **مفتوح المصدر** — يمكنك نسخه وتعديله واستخدامه بحرّية.
 
 ---
 
@@ -124,3 +68,59 @@ webapp/                # Mini App (static HTML)
 
 ### License
 MIT — see [LICENSE](LICENSE).
+
+---
+
+## 🇸🇦 العربية
+
+### المزايا
+- 👤 حسابات وملفات شخصية مع مستويات وخبرة.
+- 🪙 اقتصاد داخلي: عملات، جواهر، متجر، ومكافأة يومية بسلسلة.
+- 🎮 **10 ألعاب**: تحدي الأرقام، التخمين، الاختبار، حجر ورقة مقص، مطابقة الفواكه، إكس-أو، الرياضيات، رمي العملة، أعلى/أدنى، ترتيب الكلمات.
+- 🕹️ لعب **1v1** بين المستخدمين داخل الدردشة ولعب ضد البوت.
+- 🏆 لوحة المتصدرين، 🏅 الإنجازات، 👥 نظام الإحالات.
+- 🛡️ لوحة مطوّر (إحصائيات، بث وسائط، حظر، منح، صيانة، سجل…).
+- 🎡 تطبيق مصغّر (Mini App) بواجهة ويب.
+
+### المتطلبات
+- **Node.js 18+**
+- بوت في تيليجرام مع تفعيل **Serverless** من [@BotFather](https://t.me/BotFather).
+- أداة [`@tgcloud/cli`](https://www.npmjs.com/package/@tgcloud/cli).
+
+### طريقة التشغيل
+```bash
+# 1) تثبيت الاعتماديات
+npm install
+
+# 2) ربط المشروع ببوتك (BotFather ← البوت ← Serverless ← CLI Access)
+npx tgcloud login
+
+# 3) رفع الكود + التطبيق المصغّر
+npx tgcloud push
+
+# 4) إنشاء جداول قاعدة البيانات
+npx tgcloud migrate
+```
+ثم افتح البوت في تيليجرام وأرسل `/start`.
+
+### اختبار أمر بدون رفع
+```bash
+npx tgcloud run handlers/message "{ chat: { id: 1, type: 'private' }, from: { id: 112621302, first_name: 'Dev' }, text: '/start' }"
+```
+
+### الإعدادات
+كل معرّفات المشروع (معرّف المطوّر، معرّف التطبيق، روابط البوت والمستودع) موجودة في ملف واحد:
+`tgcloud/lib/ids.js`.
+
+### البنية
+```
+tgcloud/
+  schema.js            # جداول قاعدة البيانات
+  handlers/            # message, callback_query, inline_query, chat_member
+  endpoints/           # واجهة التطبيق المصغّر
+  lib/                 # config, ids, i18n, ui, keyboards, games/, admin, ...
+webapp/                # التطبيق المصغّر (HTML ثابت)
+```
+
+### الرخصة
+MIT — انظر [LICENSE](LICENSE).
