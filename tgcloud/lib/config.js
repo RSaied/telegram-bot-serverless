@@ -5,7 +5,7 @@
 export { DEVELOPER_ID, APP_ID, WEBAPP_URL, DEV_WEBAPP_URL, BOT_URL } from './ids.js';
 
 export const BOT_NAME = 'Serverless Bot';
-export const DEFAULT_LANG = 'ar';
+export const DEFAULT_LANG = 'en';
 
 export const CURRENCY = '🪙';
 export const GEM = '💎';

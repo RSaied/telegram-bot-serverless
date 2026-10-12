@@ -196,14 +196,19 @@ export default async function (query) {
         if (rest[0] !== 'buy') return done();
         const item = SHOP_ITEMS.find((i) => i.id === rest[1]);
         if (!item) return done();
-        const bal = item.currency === '💎' ? user.gems : user.coins;
-        if (bal < item.price) {
-          await answerCallback(query.id, t(lang, 'not_enough_coins'), { show_alert: true });
+        const ap = item.apply;
+        if (ap.premium && user.isPremium) {
+          await answerCallback(query.id, t(lang, 'shop_owned'), { show_alert: true });
           return;
         }
-        if (item.currency === '💎') await db.addGems(user.tgId, -item.price);
+        const useGems = item.pay === 'gems';
+        const bal = useGems ? user.gems : user.coins;
+        if (bal < item.price) {
+          await answerCallback(query.id, t(lang, useGems ? 'shop_no_gems' : 'not_enough_coins'), { show_alert: true });
+          return;
+        }
+        if (useGems) await db.addGems(user.tgId, -item.price);
         else await db.addCoins(user.tgId, -item.price);
-        const ap = item.apply;
         if (ap.xp) await db.awardXp(user.tgId, ap.xp);
         if (ap.coins) await db.addCoins(user.tgId, ap.coins);
         if (ap.gems) await db.addGems(user.tgId, ap.gems);

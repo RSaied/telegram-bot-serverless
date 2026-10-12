@@ -1,5 +1,6 @@
 import { t } from './i18n.js';
-import { DEV_WEBAPP_URL } from './config.js';
+import { DEV_WEBAPP_URL, CURRENCY, GEM } from './config.js';
+import { ltrNum } from './format.js';
 
 function btn(text, data) {
   return { text, callback_data: data };
@@ -68,9 +69,10 @@ export function settingsKeyboard(lang) {
 }
 
 export function shopKeyboard(lang, items) {
-  const rows = items.map((it) => [
-    btn(`${it.emoji} ${lang === 'ar' ? it.ar : it.en} — ${it.price} ${it.currency}`, `shop:buy:${it.id}`),
-  ]);
+  const rows = items.map((it) => {
+    const cur = it.pay === 'gems' ? GEM : CURRENCY;
+    return [btn(`${it.emoji} ${lang === 'ar' ? it.ar : it.en} — ${ltrNum(it.price)} ${cur}`, `shop:buy:${it.id}`)];
+  });
   rows.push([btn(t(lang, 'back'), 'menu:main')]);
   return { inline_keyboard: rows };
 }

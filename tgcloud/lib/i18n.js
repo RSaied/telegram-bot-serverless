@@ -154,7 +154,10 @@ const STRINGS = {
 
     // shop / referral / achievements / settings
     shop_title: '🛒 *المتجر*\nرصيدك: {coins} {currency} | {gems} 💎',
+    shop_hint: 'اختر غرضاً للشراء من الأزرار 👇',
     shop_bought: '✅ تم الشراء!',
+    shop_no_gems: '💎 لا تملك جواهر كافية.',
+    shop_owned: '✅ تملك هذا بالفعل.',
     ref_title: '👥 *الإحالات*',
     ref_body:
       'رابط دعوتك:\n`{link}`\n\nعدد المدعوين: {count}\nمكافأة كل دعوة: {bonus} {currency}',
@@ -374,7 +377,10 @@ const STRINGS = {
     top_line: '{rank}. {name} — {coins} {currency} (level {level})',
 
     shop_title: '🛒 *Shop*\nBalance: {coins} {currency} | {gems} 💎',
+    shop_hint: 'Pick an item to buy from the buttons 👇',
     shop_bought: '✅ Purchased!',
+    shop_no_gems: "💎 You don't have enough gems.",
+    shop_owned: '✅ You already own this.',
     ref_title: '👥 *Referrals*',
     ref_body: 'Your invite link:\n`{link}`\n\nInvited: {count}\nReward each: {bonus} {currency}',
     ach_title: '🏅 *Achievements*',
@@ -454,6 +460,14 @@ const STRINGS = {
 
 export function normalizeLang(lang) {
   return LANGS.includes(lang) ? lang : DEFAULT_LANG;
+}
+
+/** Pick a supported language from a Telegram `language_code` (e.g. "ar", "en-US"). */
+export function detectLang(languageCode) {
+  const base = String(languageCode || '')
+    .toLowerCase()
+    .split(/[-_]/)[0];
+  return LANGS.includes(base) ? base : DEFAULT_LANG;
 }
 
 export function t(lang, key, vars) {

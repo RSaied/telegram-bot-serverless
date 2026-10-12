@@ -1,5 +1,5 @@
 import { t } from './i18n.js';
-import { CURRENCY, XP_PER_LEVEL, REFERRAL_BONUS, DEVELOPER_ID, WEBAPP_URL } from './config.js';
+import { CURRENCY, GEM, XP_PER_LEVEL, REFERRAL_BONUS, DEVELOPER_ID, WEBAPP_URL } from './config.js';
 import { levelFromXp, ltrNum, userDisplay } from './format.js';
 import * as db from './db.js';
 import { listUnlocked, ACHIEVEMENTS } from './achievements.js';
@@ -14,10 +14,13 @@ import {
 } from './keyboards.js';
 
 export const SHOP_ITEMS = [
-  { id: 'xp100', emoji: '✨', price: 200, currency: CURRENCY, ar: '100 خبرة', en: '100 XP', apply: { xp: 100 } },
-  { id: 'coins1k', emoji: '🪙', price: 50, currency: '💎', ar: '1000 عملة', en: '1000 coins', apply: { coins: 1000 } },
-  { id: 'premium', emoji: '💎', price: 5000, currency: CURRENCY, ar: 'ترقية بريميوم', en: 'Premium upgrade', apply: { premium: true } },
-  { id: 'gem5', emoji: '💎', price: 2000, currency: CURRENCY, ar: '5 جواهر', en: '5 gems', apply: { gems: 5 } },
+  { id: 'xp100', emoji: '✨', pay: 'coins', price: 150, ar: '100 خبرة', en: '100 XP', arDesc: '+100 XP', enDesc: '+100 XP', apply: { xp: 100 } },
+  { id: 'xp500', emoji: '🌟', pay: 'coins', price: 600, ar: '500 خبرة', en: '500 XP', arDesc: '+500 XP', enDesc: '+500 XP', apply: { xp: 500 } },
+  { id: 'gems5', emoji: '💎', pay: 'coins', price: 1000, ar: '5 جواهر', en: '5 Gems', arDesc: '+5 💎', enDesc: '+5 💎', apply: { gems: 5 } },
+  { id: 'gems25', emoji: '💠', pay: 'coins', price: 4500, ar: '25 جوهرة', en: '25 Gems', arDesc: '+25 💎', enDesc: '+25 💎', apply: { gems: 25 } },
+  { id: 'coins2500', emoji: '🪙', pay: 'gems', price: 100, ar: '2,500 عملة', en: '2,500 Coins', arDesc: '+2,500 🪙', enDesc: '+2,500 🪙', apply: { coins: 2500 } },
+  { id: 'coins10000', emoji: '💰', pay: 'gems', price: 350, ar: '10,000 عملة', en: '10,000 Coins', arDesc: '+10,000 🪙', enDesc: '+10,000 🪙', apply: { coins: 10000 } },
+  { id: 'premium', emoji: '👑', pay: 'coins', price: 3000, ar: 'بريميوم', en: 'Premium', arDesc: 'شارة بريميوم دائمة', enDesc: 'Permanent premium badge', apply: { premium: true } },
 ];
 
 export async function mainScreen(user, lang, chatType) {
@@ -82,8 +85,19 @@ export async function gamesScreen(lang) {
 }
 
 export async function shopScreen(user, lang) {
+  const lines = SHOP_ITEMS.map((it) => {
+    const name = lang === 'ar' ? it.ar : it.en;
+    const desc = lang === 'ar' ? it.arDesc : it.enDesc;
+    const cur = it.pay === 'gems' ? GEM : CURRENCY;
+    return `${it.emoji} ${name} — ${desc} — ${ltrNum(it.price)} ${cur}`;
+  }).join('\n');
   return {
-    text: t(lang, 'shop_title', { coins: ltrNum(user.coins), gems: user.gems }),
+    text:
+      t(lang, 'shop_title', { coins: ltrNum(user.coins), gems: ltrNum(user.gems), currency: CURRENCY }) +
+      '\n' +
+      t(lang, 'shop_hint') +
+      '\n\n' +
+      lines,
     keyboard: shopKeyboard(lang, SHOP_ITEMS),
   };
 }

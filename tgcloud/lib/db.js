@@ -3,7 +3,7 @@ import { eq, and, desc, sql, inArray } from 'sdk/db';
 import { users, games, sessions, activity } from '../schema.js';
 import { START_COINS, XP_PER_LEVEL, XP_PER_WIN, XP_PER_PLAY, DEVELOPER_ID, DEFAULT_LANG, CURRENCY } from './config.js';
 import { levelFromXp, escapeMd } from './format.js';
-import { t } from './i18n.js';
+import { t, detectLang } from './i18n.js';
 import { sendMessage } from './ui.js';
 
 // ---------------------------------------------------------------------------
@@ -43,6 +43,7 @@ async function notifyNewUser(row, from) {
 export async function ensureUser(from) {
   const existing = await getUser(from.id);
   const name = from.first_name || from.username || null;
+  const lang = detectLang(from.language_code);
   const [row] = await db
     .insert(users)
     .values({
@@ -50,12 +51,14 @@ export async function ensureUser(from) {
       name,
       username: from.username ?? null,
       coins: START_COINS,
+      lang,
     })
     .onConflictDoUpdate({
       target: users.tgId,
       set: {
         name,
         username: from.username ?? null,
+        lang: sql`coalesce(${users.lang}, ${lang})`,
         lastSeen: sql`(unixepoch())`,
       },
     })
